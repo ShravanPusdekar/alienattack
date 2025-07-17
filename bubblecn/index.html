@@ -23,4 +23,70 @@
 <body style="padding:0; margin: 0; background: #000;">
 <canvas id="gameCanvas" width="document.window.width" height="document.window.height"></canvas>
 <script src="SU_GemFalls.js"></script>
-<body></html>
+
+<script>
+    // Score submission functionality for bubblecn
+    let gameOverSent = false;
+    
+    function sendScore(score) {
+        if (gameOverSent) return;
+        gameOverSent = true;
+        console.log('🎯 Game Over: score is', score);
+        
+        const origin = window.location.hostname.includes("localhost")
+            ? "http://localhost:5173"
+            : "https://fulboost.fun";
+            
+        window.parent.postMessage({ type: "GAME_OVER", score: score }, origin);
+    }
+
+    // Try to find the game's score and game over state
+    function checkBubbleCNGame() {
+        // Try to access the game's global variables
+        const game = window.GemFalls || window.game;
+        
+        if (game) {
+            // Check for game over state periodically
+            const checkInterval = setInterval(() => {
+                try {
+                    // Look for score in common locations
+                    const score = game.score || game.Score || 
+                                (game.player && game.player.score) || 0;
+                    
+                    // Check for game over state
+                    const isGameOver = game.gameOver || 
+                                     game.state && game.state.isGameOver ||
+                                     document.querySelector('.game-over, #gameOver');
+                    
+                    if (isGameOver && !gameOverSent) {
+                        sendScore(Number(score));
+                        clearInterval(checkInterval);
+                    }
+                } catch (e) {
+                    console.error('Error checking game state:', e);
+                    clearInterval(checkInterval);
+                }
+            }, 1000);
+            return true;
+        }
+        return false;
+    }
+    
+    // Start tracking when the game is loaded
+    function initialize() {
+        if (document.readyState === 'complete') {
+            if (!checkBubbleCNGame()) {
+                // If we can't find the game object, try again after a delay
+                setTimeout(initialize, 1000);
+            }
+        } else {
+            window.addEventListener('load', initialize);
+        }
+    }
+    
+    // Start the initialization
+    initialize();
+</script>
+
+</body>
+</html>

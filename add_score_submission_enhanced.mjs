@@ -1,56 +1,13 @@
-﻿<!DOCTYPE html>
-<html manifest="offline.appcache">
-<head>
-    <meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<title>Bouncing Dot</title>
-	
-	<!-- Standardised web app manifest -->
-	<link rel="manifest" href="app.manifest" />
-	
-	<!-- Allow fullscreen mode on iOS devices. (These are Apple specific meta tags.) -->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<link rel="apple-touch-icon" sizes="256x256" href="icon-256.png" />
-	<meta name="HandheldFriendly" content="true" />
-	
-	<!-- Chrome for Android web app tags -->
-	<meta name="mobile-web-app-capable" content="yes" />
-	<link rel="shortcut icon" sizes="256x256" href="icon-256.png" />
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-    <!-- All margins and padding must be zero for the canvas to fill the screen. -->
-	<style type="text/css">
-		* {
-			padding: 0;
-			margin: 0;
-		}
-		html, body {
-			background: #000;
-			color: #fff;
-			overflow: hidden;
-			touch-action: none;
-			-ms-touch-action: none;
-		}
-		canvas {
-			touch-action-delay: none;
-			touch-action: none;
-			-ms-touch-action: none;
-		}
-    </style>
-	
-	<link href="main.css" rel="stylesheet" type="text/css" />
-	<link href="page_achievements.css" rel="stylesheet" type="text/css" />
-	<link href="page_leaderboards.css" rel="stylesheet" type="text/css" />
-	<link href="style.css" rel="stylesheet" type="text/css" />
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-</head> 
- 
-<body> 
-	<div id="fb-root"></div>
-	
-	
-    
+// Enhanced score submission code with multiple detection methods
+const SCORE_SUBMISSION_CODE = `
     <script>
         // Score submission functionality
         let gameOverSent = false;
@@ -161,7 +118,7 @@
                 // If we find score elements, set up a mutation observer
                 const observer = new MutationObserver(() => {
                     const scoreText = scoreElements[0].textContent || '0';
-                    const score = parseInt(scoreText.replace(/D/g, '')) || 0;
+                    const score = parseInt(scoreText.replace(/\D/g, '')) || 0;
                     
                     // Check for game over state (this is a simple check, might need adjustment)
                     const gameOverElement = document.querySelector('.game-over, #gameOver');
@@ -183,6 +140,58 @@
         } else {
             window.addEventListener('load', initializeScoreTracking);
         }
-    </script>
-</body> 
-</html> 
+    </script>`;
+
+// Function to update a single game's index.html
+async function updateGameIndex(gameDir) {
+    const indexPath = path.join(__dirname, gameDir, 'index.html');
+    
+    try {
+        // Read the index.html file
+        let content = await fs.promises.readFile(indexPath, 'utf8');
+        
+        // Remove any existing score submission code
+        content = content.replace(/<script>[\s\S]*?\/\/ Score submission functionality[\s\S]*?<\/script>\s*/g, '');
+        
+        // Insert the score submission code before the closing </body> tag
+        const updatedContent = content.replace('</body>', `${SCORE_SUBMISSION_CODE}\n</body>`);
+        
+        // Write the updated content back to the file
+        await fs.promises.writeFile(indexPath, updatedContent, 'utf8');
+        console.log(`✅ Updated ${gameDir} with enhanced score submission`);
+        
+    } catch (error) {
+        console.error(`❌ Error updating ${gameDir}:`, error.message);
+    }
+}
+
+// Main function to update all games
+async function updateAllGames() {
+    const gamesDir = __dirname;
+    
+    try {
+        // Get all directories in the games folder
+        const items = await fs.promises.readdir(gamesDir, { withFileTypes: true });
+        const gameDirs = items
+            .filter(item => item.isDirectory() && item.name !== '.git')
+            .map(dir => dir.name);
+        
+        console.log(`Found ${gameDirs.length} games to update\n`);
+        
+        // Update each game
+        for (const gameDir of gameDirs) {
+            console.log(`Updating ${gameDir}...`);
+            await updateGameIndex(gameDir);
+        }
+        
+        console.log('\n🎉 All games have been updated with enhanced score submission functionality!');
+        console.log('\nNote: Some games might need additional customization based on their specific implementation.');
+        
+    } catch (error) {
+        console.error('Error processing games:', error);
+        process.exit(1);
+    }
+}
+
+// Run the updater
+updateAllGames().catch(console.error);
