@@ -213,11 +213,8 @@ function goPage(page){
 	 btnBack.visible=con;
 	 shareTxt.visible=con;
 	 btnFb.visible=btnTwitter.visible=btnGoogle.visible=con;
-	 btnReplay.visible=btnBackMain.visible=btnShare.visible=true;
-	 
-	 if(con){
-		btnReplay.visible=btnBackMain.visible=btnShare.visible=false; 
-	 }
+	 // Hide REPLAY, HOME, and SHARE buttons permanently
+	 btnReplay.visible=btnBackMain.visible=btnShare.visible=false;
  }
 
 /*!
