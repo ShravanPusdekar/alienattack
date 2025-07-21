@@ -1,0 +1,12 @@
+{
+    "piny.project_settings": {
+        "open-pages": [
+            "pinyfakepage.html"
+        ],
+        "component-settings": {
+            "captainroger/src/rogers2.min.js:::Temp": {
+                "black-box": true
+            }
+        }
+    }
+}
