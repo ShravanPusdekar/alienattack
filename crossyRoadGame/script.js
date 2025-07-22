@@ -594,19 +594,14 @@ function move(direction) {
   moves.push(direction);
 }
 
-async function sendScore(score) {
-  try {
-    const response = await fetch('https://fulboost.fun/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ score: score })
-    });
-    console.log('Score submitted successfully:', await response.text());
-  } catch (error) {
-    console.error('Error submitting score:', error);
-  }
+function sendScore(score) {
+  console.log('🎯 Game Over: score is', score);
+  
+  const origin = window.location.hostname.includes("localhost")
+    ? "http://localhost:5173"
+    : "https://fulboost.fun";
+    
+  window.parent.postMessage({ type: "GAME_OVER", score: score }, origin);
 }
 
 function endGame() {
