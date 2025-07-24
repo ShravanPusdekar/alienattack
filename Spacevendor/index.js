@@ -29,12 +29,18 @@ function stopBackgroundMusic() {
     backgroundMusic.currentTime = 0;
 }
 
-// Play kill sound
+// Play kill sound for only 0.10 seconds
 function playKillSound() {
     killSound.currentTime = 0;
     killSound.play().catch(error => {
         console.log("Kill sound play failed:", error);
     });
+    
+    // Stop the kill sound after 0.10 seconds (100ms)
+    setTimeout(() => {
+        killSound.pause();
+        killSound.currentTime = 0;
+    }, 100);
 }
 
 // Enable audio on first user interaction
