@@ -36,7 +36,7 @@ var ytResultBox = (function () {
 		console.log(point);
 		const origin = window.location.hostname.includes("localhost")
   ? "http://localhost:5173"
-  : "https://www.fulboost.fun";
+  : "https://fulboost.fun";
 
 window.parent.postMessage({ type: "GAME_OVER", score: point }, origin);
 		var pointTxt = s.txtTemplate.clone();
