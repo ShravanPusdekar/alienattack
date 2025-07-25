@@ -23,7 +23,7 @@ var ytMenuLayer = (function () {
 		txtTemplate.color = "white";
 		txtTemplate.filters = [new LDropShadowFilter(null, null, "white", 15)];
 
-		var btnList = ["START", "HELP", "ABOUT"];
+		var btnList = ["START"];
 
 		for (var k = 0; k < btnList.length; k++) {
 			var t = btnList[k];

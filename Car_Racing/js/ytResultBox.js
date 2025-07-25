@@ -55,9 +55,7 @@ window.parent.postMessage({ type: "GAME_OVER", score: point }, origin);
 		s.btnLayer.y = s.txtLayer.y + s.txtLayer.getHeight() + 50;
     
 		var btnTxtList = [
-			"Replay",
-			"Back to Menu",
-			"Back to Option"
+			
 		];
 
 		for (var k = 0, btnY = 0; k < btnTxtList.length; k++) {
