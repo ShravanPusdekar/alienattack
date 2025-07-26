@@ -99,6 +99,9 @@ mit.main = function() {
 
   // Start Button
   var startGame = function() {
+    // Reset game over state first
+    mit.game_over = 0;
+    
     // Play the awesome music! Really awesome
     music.play();
     
@@ -143,6 +146,14 @@ mit.main = function() {
     // Nuke all pakias and cur_pakia
     mit.PakiaUtils.pakias = [];
     mit.PakiaUtils.cur_pakia = false;
+    
+    // Reset Pappu position if needed
+    if (mit.Pappu.reset) {
+      mit.Pappu.reset();
+    }
+    
+    // Update the button text back to start
+    ui.start_game.html('start');
   };
 
   ui.start_game.on('mousedown', function() {
@@ -352,6 +363,9 @@ mit.main = function() {
 
     mit.game_over = 1;
     mit.start_btn_clicked = 0;
+    
+    // Reset game state for restart
+    mit.game_started = 0;
 
     // Pappu if invincible will be no morez
     mit.Pappu.undoInvincible();
