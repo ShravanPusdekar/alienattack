@@ -294,13 +294,44 @@ mit.main = function() {
     Performing some game over tasks
   */
   mit.gameOver = function() {
+    // Prevent multiple game over calls
+    if (mit.game_over) return;
+    
+    // Set game over state immediately
+    mit.game_over = 1;
+    
     // Print the score to console when game ends
     console.log("Game Over! Final Score: " + parseInt(mit.score));
+    console.log("Sending postMessage to parent...");
+    
+    // Fix origin detection - always use the main domain
     const origin = window.location.hostname.includes("localhost")
-  ? "http://localhost:5173"
-  : "https://fulboost.fun";
+      ? "http://localhost:5173"
+      : "https://fulboost.fun";
 
-window.parent.postMessage({ type: "GAME_OVER", score: parseInt(mit.score), origin });
+    const scoreToSend = parseInt(mit.score);
+    
+    // Try multiple ways to send the message
+    try {
+      // Send to parent with correct origin
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "GAME_OVER", score: scoreToSend }, origin);
+        console.log("PostMessage sent to parent with score:", scoreToSend, "origin:", origin);
+      }
+      
+      // Also try sending to top window
+      if (window.top && window.top !== window) {
+        window.top.postMessage({ type: "GAME_OVER", score: scoreToSend }, origin);
+        console.log("PostMessage sent to top with score:", scoreToSend, "origin:", origin);
+      }
+      
+      // Send with wildcard origin as fallback
+      window.parent.postMessage({ type: "GAME_OVER", score: scoreToSend }, "*");
+      console.log("PostMessage sent with wildcard origin, score:", scoreToSend);
+      
+    } catch (error) {
+      console.error("Error sending postMessage:", error);
+    }
     
     ui.start_screen.fadeIn();
 
