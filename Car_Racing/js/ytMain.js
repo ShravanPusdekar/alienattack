@@ -11,9 +11,18 @@ function main () {
 	b.style.margin = "0px";
 	b.style.padding = "0px";
 	b.style.backgroundColor = "black";
+	b.style.height = "100vh";
+	b.style.width = "100vw";
+	b.style.overflow = "hidden";
+
+	var html = document.documentElement;
+	html.style.margin = "0px";
+	html.style.padding = "0px";
+	html.style.height = "100vh";
+	html.style.width = "100vw";
 
 	if (LGlobal.mobile) {
-		LGlobal.stageScale = LStageScaleMode.SHOW_ALL;
+		LGlobal.stageScale = LStageScaleMode.EXACT_FIT;
 	}
 	LGlobal.screen(LGlobal.FULL_SCREEN);
 

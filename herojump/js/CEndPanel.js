@@ -95,9 +95,10 @@ function CEndPanel(oSpriteBg){
     };
     
     this.show = function(iScore){
+        console.log(iScore);
         const origin = window.location.hostname.includes("localhost")
   ? "http://localhost:5173"
-  : "https://www.fulboost.fun";
+  : "https://fulboost.fun";
 
 window.parent.postMessage({ type: "GAME_OVER", score: iScore }, origin);
         setVolume(s_oSoundtrack, 0)

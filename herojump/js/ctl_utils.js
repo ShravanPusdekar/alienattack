@@ -144,78 +144,53 @@ function sizeHandler() {
 		return;
 	}
 
-	var h;
-        var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+        // Use simple window dimensions for true full screen
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-        if(iOS){
-            h = getIOSWindowHeight();
-        }else{ 
-            h = getSize("Height");
-        }
-        
-        var w = getSize("Width");
-
-	var multiplier = Math.min((h / CANVAS_HEIGHT), (w / CANVAS_WIDTH));
-
-	var destW = CANVAS_WIDTH * multiplier;
-	var destH = CANVAS_HEIGHT * multiplier;
-        
-        var iAdd = 0;
-        if (destH < h){
-            iAdd = h-destH;
-            destH += iAdd;
-            destW += iAdd*(CANVAS_WIDTH/CANVAS_HEIGHT);
-        }else  if (destW < w){
-            iAdd = w-destW;
-            destW += iAdd;
-            destH += iAdd*(CANVAS_HEIGHT/CANVAS_WIDTH);
-        }
-
-        var fOffsetY = ((h / 2) - (destH / 2));
-        var fOffsetX = ((w / 2) - (destW / 2));
-        var fGameInverseScaling = (CANVAS_WIDTH/destW);
-
-        if( fOffsetX*fGameInverseScaling < -EDGEBOARD_X ||  
-            fOffsetY*fGameInverseScaling < -EDGEBOARD_Y ){
-            multiplier = Math.min( h / (CANVAS_HEIGHT-(EDGEBOARD_Y*2)), w / (CANVAS_WIDTH-(EDGEBOARD_X*2)));
-            destW = CANVAS_WIDTH * multiplier;
-            destH = CANVAS_HEIGHT * multiplier;
-            fOffsetY = ( h - destH ) / 2;
-            fOffsetX = ( w - destW ) / 2;
-            
-            fGameInverseScaling = (CANVAS_WIDTH/destW);
-        }
-
-        s_iOffsetX = (-1*fOffsetX * fGameInverseScaling);
-        s_iOffsetY = (-1*fOffsetY * fGameInverseScaling);
-        
-        if(fOffsetY >= 0 ){
-            s_iOffsetY = 0;
-        }
-        
-        if(fOffsetX >= 0 ){
-            s_iOffsetX = 0;
-        }
+        // Force full screen dimensions - no letterboxing/pillarboxing
+        s_iOffsetX = 0;
+        s_iOffsetY = 0;
         
         if(s_oInterface !== null){
-            s_oInterface.refreshButtonPos( s_iOffsetX,s_iOffsetY);
+            s_oInterface.refreshButtonPos( s_iOffsetX, s_iOffsetY);
         }
         if(s_oMenu !== null){
-            s_oMenu.refreshButtonPos( s_iOffsetX,s_iOffsetY);
+            s_oMenu.refreshButtonPos( s_iOffsetX, s_iOffsetY);
         }
         
+	// Set canvas to exact screen dimensions
+	$("#canvas").css({
+            "width": w + "px",
+            "height": h + "px",
+            "top": "0px",
+            "left": "0px",
+            "position": "fixed",
+            "margin": "0",
+            "padding": "0",
+            "border": "none"
+        });
         
-	$("#canvas").css("width",destW+"px");
-	$("#canvas").css("height",destH+"px");
+        // Update the actual canvas element size to match screen
+        var canvas = document.getElementById("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
         
-        if(fOffsetY < 0){
-            $("#canvas").css("top",fOffsetY+"px");
-        }else{
-            $("#canvas").css("top","0px");
+        // Scale the stage to fill the entire screen (stretch to fit)
+        if (s_oStage) {
+            var scaleX = w / CANVAS_WIDTH;
+            var scaleY = h / CANVAS_HEIGHT;
+            
+            // Use the larger scale to fill the screen completely
+            s_oStage.scaleX = scaleX;
+            s_oStage.scaleY = scaleY;
+            
+            // No centering - start from 0,0 to fill entire screen
+            s_oStage.x = 0;
+            s_oStage.y = 0;
         }
-        
-        $("#canvas").css("left",fOffsetX+"px");
-
 };
 
 function createBitmap(oSprite, iWidth, iHeight){
