@@ -1,11 +1,9 @@
 function CInterface(iGoal){
     var _oAudioToggle;
-    var _oButExit;
     var _oButRestart;
     
     var _oHelpPanel=null;
     
-    var _pStartPosExit;
     var _pStartPosAudio;
     var _pStartPosRestart;
     
@@ -14,18 +12,10 @@ function CInterface(iGoal){
     var _oScorePos          = {x: CANVAS_WIDTH/2-225, y: 60};
     
     this._init = function(iGoal){                
-        var oExitX;        
-        
-        var oSprite = s_oSpriteLibrary.getSprite('but_exit');
-        _pStartPosExit = {x: CANVAS_WIDTH - (oSprite.height/2)- 10, y: (oSprite.height/2) + 10};
-        _oButExit = new CGfxButton(_pStartPosExit.x, _pStartPosExit.y, oSprite, s_oStage);
-        _oButExit.addEventListener(ON_MOUSE_UP, this._onExit, this);
-        
-        oExitX = CANVAS_WIDTH - (oSprite.width/2)- 120;
-        _pStartPosAudio = {x: oExitX, y: (oSprite.height/2) + 10};
         
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             var oSprite = s_oSpriteLibrary.getSprite('audio_icon');
+            _pStartPosAudio = {x: CANVAS_WIDTH - (oSprite.width/2) - 10, y: (oSprite.height/2) + 10};
             _oAudioToggle = new CToggle(_pStartPosAudio.x,_pStartPosAudio.y,oSprite,s_bAudioActive);
             _oAudioToggle.addEventListener(ON_MOUSE_UP, this._onAudioToggle, this);    
         }
@@ -60,8 +50,6 @@ function CInterface(iGoal){
             _oAudioToggle = null;
         }
         
-        _oButExit.unload();
-        
         if(_oHelpPanel!==null){
             _oHelpPanel.unload();
         }
@@ -69,7 +57,6 @@ function CInterface(iGoal){
     };
     
     this.refreshButtonPos = function(iNewX,iNewY){
-        _oButExit.setPosition(_pStartPosExit.x - iNewX,iNewY + _pStartPosExit.y);
         if(DISABLE_SOUND_MOBILE === false || s_bMobile === false){
             _oAudioToggle.setPosition(_pStartPosAudio.x - iNewX,iNewY + _pStartPosAudio.y);
         }        
@@ -88,10 +75,6 @@ function CInterface(iGoal){
     this._onAudioToggle = function(){
         createjs.Sound.setMute(s_bAudioActive);
         s_bAudioActive = !s_bAudioActive;
-    };
-    
-    this._onExit = function(){
-        s_oGame.onExit();  
     };
     
     this._onRestart = function(){

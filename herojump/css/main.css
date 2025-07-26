@@ -3,10 +3,19 @@ root {
 }
 
 body{
-    background-color: #f3f3f3;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #000;
     background-repeat: repeat-x;
     background-position: top;
-    background-image: url(../sprites/bg_tile.jpg);  
+    background-image: url(../sprites/bg_tile.jpg);
+    overflow: hidden !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    border: none !important;
 }
 
 *, *:before, *:after {
@@ -15,6 +24,10 @@ body{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
 }
      
 input, input:before, input:after {
@@ -29,8 +42,17 @@ input, input:before, input:after {
 ::-moz-selection { background: transparent;color:inherit; }
 
 #canvas{
-    position: fixed;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
     background-color: #000;
+    z-index: 1;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
 }
 
 canvas {

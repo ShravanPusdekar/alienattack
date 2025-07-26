@@ -23,7 +23,7 @@ function CToggle(iXPos,iYPos,oSprite,bActive){
          
         _oButton.x = iXPos;
         _oButton.y = iYPos; 
-        _oButton.stop();
+      //  _oButton.stop();
         
         s_oStage.addChild(_oButton);
         
