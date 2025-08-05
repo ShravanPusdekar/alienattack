@@ -621,10 +621,16 @@ window.addEventListener('resize', initJoystick);
 
 // Only add controls if elements exist
 if (joystick && shootBtn) {
+    let joystickTouchId = null;
+    
     // Joystick touch events
     joystick.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling
         if (game.over) return;
+        
+        // Store the touch ID for the joystick
+        joystickTouchId = e.touches[0].identifier;
         
         // Enable audio on first interaction
         enableAudio();
@@ -635,16 +641,40 @@ if (joystick && shootBtn) {
     });
 
     document.addEventListener('touchmove', (e) => {
-        if (!joystickActive || game.over) return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        updateJoystickPosition(touch.clientX, touch.clientY);
+        if (!joystickActive || game.over || joystickTouchId === null) return;
+        
+        // Find our specific touch
+        for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === joystickTouchId) {
+                updateJoystickPosition(e.touches[i].clientX, e.touches[i].clientY);
+                break;
+            }
+        }
     });
 
     document.addEventListener('touchend', (e) => {
-        if (joystickActive) {
-            e.preventDefault();
-            resetJoystick();
+        if (!joystickActive || joystickTouchId === null) return;
+        
+        // Check if our joystick touch ended
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === joystickTouchId) {
+                resetJoystick();
+                joystickTouchId = null;
+                break;
+            }
+        }
+    });
+    
+    document.addEventListener('touchcancel', (e) => {
+        if (!joystickActive || joystickTouchId === null) return;
+        
+        // Check if our joystick touch was cancelled
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === joystickTouchId) {
+                resetJoystick();
+                joystickTouchId = null;
+                break;
+            }
         }
     });
 
@@ -669,10 +699,16 @@ if (joystick && shootBtn) {
         }
     });
 
-    // Shoot button - continuous firing
+    // Shoot button - continuous firing with multi-touch support
+    let shootTouchId = null;
+    
     shootBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling
         if (game.over) return;
+        
+        // Store the touch ID for this button
+        shootTouchId = e.touches[0].identifier;
         
         // Enable audio on first interaction
         enableAudio();
@@ -682,7 +718,23 @@ if (joystick && shootBtn) {
 
     shootBtn.addEventListener('touchend', (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling
+        
+        // Only stop shooting if our specific touch ended
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === shootTouchId) {
+                keys.space.pressed = false;
+                shootTouchId = null;
+                break;
+            }
+        }
+    });
+
+    shootBtn.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         keys.space.pressed = false;
+        shootTouchId = null;
     });
 
     shootBtn.addEventListener('mousedown', (e) => {

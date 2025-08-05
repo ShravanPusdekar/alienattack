@@ -52,7 +52,17 @@ var GoodBoySplash = (function()
                     sprite.anchor.y = 0.5;
                     sprite.position.x = nStageWidth * 0.5;
                     sprite.position.y = nStageHeight * 0.5;
-                    sprite.scale.set(1);
+                    
+                    // Scale goodboy_logo.png to fit screen size, keep normal size for loading frames
+                    if(loadingFrames[tick] === "img/goodboy_logo.png") {
+                        // Calculate scale to fit screen with some padding
+                        var scaleX = (nStageWidth * 0.8) / sprite.texture.width;
+                        var scaleY = (nStageHeight * 0.8) / sprite.texture.height;
+                        var scale = Math.min(scaleX, scaleY); // Use smaller scale to maintain aspect ratio
+                        sprite.scale.set(scale);
+                    } else {
+                        sprite.scale.set(1); // Keep loading frames normal size
+                    }
                  
                 paperStage.addChild(sprite);
                 paperRenderer.render(paperStage);

@@ -331,15 +331,15 @@ mit.main = function() {
       }
       
       // Also try sending to top window
-      if (window.top && window.top !== window) {
+     else if (window.top && window.top !== window) {
         window.top.postMessage({ type: "GAME_OVER", score: scoreToSend }, origin);
         console.log("PostMessage sent to top with score:", scoreToSend, "origin:", origin);
-      }
-      
+      } else {
+
       // Send with wildcard origin as fallback
       window.parent.postMessage({ type: "GAME_OVER", score: scoreToSend }, "*");
       console.log("PostMessage sent with wildcard origin, score:", scoreToSend);
-      
+      }
     } catch (error) {
       console.error("Error sending postMessage:", error);
     }
